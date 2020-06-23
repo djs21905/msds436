@@ -1,5 +1,8 @@
 import tweepy
 import pandas as pd
+import boto3
+from io import StringIO
+
 
 # Using Twitter API to form tabular data set of n = 50
 
@@ -30,4 +33,18 @@ table = pd.DataFrame(data=r,
                     columns=['Text', "User Location","Screen Name","Coordinates"])
 
 
-print(table)
+awsaccess_key = ''
+secret_key = ''
+token = ''
+
+s3= boto3.client('s3',
+    aws_access_key_id=awsaccess_key,
+    aws_secret_access_key=secret_key,
+    aws_session_token = token)
+
+csv_buffer = StringIO()
+table.to_csv(csv_buffer)
+
+response = s3.put_object(Body =csv_buffer.getvalue(),
+                        Bucket = 'msds436assign1',
+                        Key = 'twitter_data2.csv')
