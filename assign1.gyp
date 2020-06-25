@@ -2,7 +2,11 @@ import tweepy
 import pandas as pd
 import boto3
 from io import StringIO
+import numpy as np
 
+
+def remove_non_ascii(text):
+    return ''.join(i for i in text if ord(i)<128)
 
 # Using Twitter API to form tabular data set of n = 50
 
@@ -29,22 +33,30 @@ tweets = tweepy.Cursor(api.search,
 # Past 50 tweets to @Trump
 r = [[tweet.text,tweet.user.location,tweet.user.screen_name,tweet.place] for tweet in tweets]
 
-table = pd.DataFrame(data=r, 
-                    columns=['Text', "User Location","Screen Name","Coordinates"])
+table = pd.DataFrame(data=r,columns=['Text', "User Location","Screen Name","Coordinates"])
 
+table.replace('', 'test', inplace=True)
+table.fillna("Test2",inplace=True)
+table.replace(',','', regex=True, inplace=True)
+table.replace('"','', regex=True, inplace=True)
+table.replace('@','', regex=True, inplace=True)
+table.replace('\n','', regex=True, inplace=True)
+print(table)
 
-awsaccess_key = ''
-secret_key = ''
-token = ''
+aws_access_key_id=''
+aws_secret_access_key=''
+aws_session_token=''
 
 s3= boto3.client('s3',
-    aws_access_key_id=awsaccess_key,
-    aws_secret_access_key=secret_key,
-    aws_session_token = token)
+    aws_access_key_id=aws_access_key_id,
+    aws_secret_access_key=aws_secret_access_key,
+    aws_session_token = aws_session_token)
+
+#table["Text"] = table["Text"].apply(remove_non_ascii)
 
 csv_buffer = StringIO()
-table.to_csv(csv_buffer)
+table.to_csv(csv_buffer,index=False)
 
 response = s3.put_object(Body =csv_buffer.getvalue(),
                         Bucket = 'msds436assign1',
-                        Key = 'twitter_data2.csv')
+                        Key = 'twitter_data.csv')
