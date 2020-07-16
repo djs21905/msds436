@@ -5,6 +5,26 @@ import json
 import string
 #Connect to S3 with boto3 --> Load data from S3 to Python. Python to ES
 
+'''
+NOTE 
+Use Postman to create an elasticsearch index -- > http://localhost:9200/test6/
+Use Postman to create an elasticsearch schema/mapping --> http://localhost:9200/test6/_mapping 
+
+JSON 
+{
+    "properties": {
+      "geotag": {"type": "geo_point"},
+      "datetime": {"type": "date","format": "yyyy-MM-dd HH:mm"},
+      "last_updated": {"type": "date","format": "yyyy-MM-dd HH:mm"}
+
+    }
+  }
+
+
+Use Postman to test schema/mapping --> http://localhost:9200/test6/_mapping
+
+'''
+
 
 def connect_elasticsearch():
     _es = None
