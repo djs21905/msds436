@@ -55,6 +55,6 @@ a = a.iloc[:,0:11]
 a.dropna(inplace=True)
 
 final = pd.concat([a,b])
-final['id'] = final['id'].astype('int')
+final['id'] = final['id'].astype('float')
 final.drop_duplicates('id', inplace=True)
 set_with_dataframe(sheet,final)
