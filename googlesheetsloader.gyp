@@ -13,8 +13,7 @@ gc= gspread.authorize(creds)
 sheet = gc.open("436finalproject").sheet1
 
 cl = CraigslistHousing(site='chicago', area='chc', category='apa')
-results = cl.get_results(sort_by='price_asc', geotagged=True, limit =10)
-
+results = cl.get_results(sort_by='price_asc', geotagged=True, limit =100)
 
 df = {'id': [],
 'repost_of': [],
@@ -29,6 +28,7 @@ df = {'id': [],
 'longitude':[]}
 
 for result in results:
+    print(result)
     df['id'].append(result['id'])
     df['repost_of'].append(result['repost_of'])
     df['name'].append(result['name'])
@@ -37,9 +37,15 @@ for result in results:
     df['last_updated'].append(result['last_updated'])
     df['price'].append(result['price'])
     df['where'].append(result['where'])
+    
     df['has_image'].append(result['has_image'])
-    df['latitude'].append(result['geotag'][0])
-    df['longitude'].append(result['geotag'][1])
+    if result['geotag'] == None:
+            df['latitude'].append(0.0)
+            df['longitude'].append(0.0)
+    else:
+        df['latitude'].append(result['geotag'][0])
+        df['longitude'].append(result['geotag'][1])
+
 
 b = pd.DataFrame(df)
 
