@@ -12,8 +12,8 @@ creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json",scope)
 gc= gspread.authorize(creds)
 sheet = gc.open("436finalproject").sheet1
 
-cl = CraigslistHousing(site='chicago', area='chc', category='apa')
-results = cl.get_results(sort_by='price_asc', geotagged=True, limit =100)
+cl = CraigslistHousing(site='chicago', area='chc', category='apa', filters = {'posted_today': True})
+results = cl.get_results(sort_by='price_asc', geotagged=True, limit =500
 
 df = {'id': [],
 'repost_of': [],
