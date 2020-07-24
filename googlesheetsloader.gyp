@@ -13,7 +13,7 @@ gc= gspread.authorize(creds)
 sheet = gc.open("436finalproject").sheet1
 
 cl = CraigslistHousing(site='chicago', area='chc', category='apa', filters = {'posted_today': True})
-results = cl.get_results(sort_by='price_asc', geotagged=True, limit =500
+results = cl.get_results(sort_by='price_asc', geotagged=True, limit =500)
 
 df = {'id': [],
 'repost_of': [],
