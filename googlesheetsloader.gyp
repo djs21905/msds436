@@ -13,7 +13,7 @@ gc= gspread.authorize(creds)
 sheet = gc.open("436finalproject").sheet1
 
 cl = CraigslistHousing(site='chicago', area='chc', category='apa', filters = {'posted_today': True})
-results = cl.get_results(sort_by='price_asc', geotagged=True, limit =500)
+results = cl.get_results(sort_by='price_asc', geotagged=True, limit =5000)
 
 df = {'id': [],
 'repost_of': [],
@@ -28,7 +28,7 @@ df = {'id': [],
 'longitude':[]}
 
 for result in results:
-    print(result)
+    #print(result)
     df['id'].append(result['id'])
     df['repost_of'].append(result['repost_of'])
     df['name'].append(result['name'])
@@ -47,14 +47,17 @@ for result in results:
         df['longitude'].append(result['geotag'][1])
 
 
-b = pd.DataFrame(df)
+new_data = pd.DataFrame(df)
+print("New data length " + str(len(new_data)))
+google_sheets = get_as_dataframe(sheet)
+print("Old data length " + str(len(google_sheets)))
 
+google_sheets = google_sheets.iloc[:,0:11]
 
-a = get_as_dataframe(sheet)
-a = a.iloc[:,0:11]
-a.dropna(inplace=True)
-
-final = pd.concat([a,b])
-final['id'] = final['id'].astype('float')
-final.drop_duplicates('id', inplace=True)
-set_with_dataframe(sheet,final)
+merged = pd.concat([google_sheets,new_data])
+print("Merged data length " + str(len(merged)))
+merged['id'] = merged['id'].astype('float')
+merged = merged.drop_duplicates(subset=['id','url'])
+print("Merged data length after drop duplicates " + str(len(merged)))
+set_with_dataframe(sheet,merged,resize=True)
+print(merged.dtypes)
