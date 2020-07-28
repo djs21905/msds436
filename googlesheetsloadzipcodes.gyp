@@ -28,7 +28,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json",scope)
 gc= gspread.authorize(creds)
 sheet = gc.open("436finalproject").get_worksheet(0)
 cl = CraigslistHousing(site='chicago', area='chc', category='apa', filters = {'posted_today': True})
-results = cl.get_results(sort_by='price_asc', geotagged=True, limit =300)
+results = cl.get_results(sort_by='price_asc', geotagged=True, limit = 1)
 
 df = {'id': [],
 'repost_of': [],
@@ -90,7 +90,12 @@ merged = merged[merged['longitude'].notna()]
 merged = merged[merged['longitude'].notna()]
 merged = merged[merged['neighborhood'].notna()]
 merged = merged[merged['zipcodes'].notna()]
+merged = merged[merged['longitude'] != 0]
+merged = merged[merged['latitude'] != 0]
 
+# Handles dropping any zip code that isnt len of 5 
+merged['zipcodes'] = merged['zipcodes'].astype(str)
+merged = merged[merged['zipcodes'].str.len() == 5]
 
-print("Merged data length after drop duplicates " + str(len(merged)))
+print("Merged data length after drop duplicates, nulls and broken zip codes " + str(len(merged)))
 set_with_dataframe(sheet,merged,resize=True)
